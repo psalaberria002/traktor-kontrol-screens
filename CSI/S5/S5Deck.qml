@@ -26,6 +26,9 @@ Module
   property bool keyOrBPMOverlay: false;
   property bool tempBPMOverlay:  false;
 
+  property bool isTouchstripLedEnabled: false;
+  property bool tempLedToggle: false;
+
   readonly property double syncPhase: (syncPhaseProp.value * 2.0).toFixed(2)
 
   MappingPropertyDescriptor {
@@ -47,6 +50,7 @@ Module
 
 
   AppProperty { id: masterDeckIdProp; path: "app.traktor.masterclock.source_id" }
+  AppProperty { id: masterClockBpm; path: "app.traktor.masterclock.tempo" }
   AppProperty { id: isTempoSynced;    path: "app.traktor.decks." + (focusedDeckId) + ".sync.enabled" }
   AppProperty { id: syncPhaseProp;    path: "app.traktor.decks." + (focusedDeckId) + ".tempo.phase"; }
 
@@ -59,6 +63,9 @@ Module
     } 
   }
   
+  // Sync BPM only
+
+  AppProperty { id: hack_BPM; path: "app.traktor.decks." + (focusedDeckId) + ".tempo.adjust_bpm" }
   //------------------------------------------------------------------------------------------------------------------
   //  Footer Selection
   //------------------------------------------------------------------------------------------------------------------
@@ -3775,7 +3782,7 @@ Module
       enabled: module.shift && hasSeek(deckAType) && !(deckARunning.value  && scratchWithTouchstrip.value)
 
       Wire { from: "%surface%.touchstrip";        to: "decks.1.track_seek"      }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.track_seek.leds" }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.track_seek.leds" ; enabled: isTouchstripLedEnabled}
     }
 
     WiresGroup
@@ -3784,7 +3791,7 @@ Module
                || (deckARunning.value && module.shift && (!hasSeek(deckAType) || scratchWithTouchstrip.value))
 
       Wire { from: "%surface%.touchstrip";        to: "decks.1.scratch"        }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.scratch.leds"   }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.scratch.leds"   ; enabled: isTouchstripLedEnabled}
     }
 
     WiresGroup
@@ -3792,7 +3799,7 @@ Module
       enabled: deckARunning.value && !module.shift
 
       Wire { from: "%surface%.touchstrip";        to: "decks.1.tempo_bend"      }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.tempo_bend.leds" }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.1.tempo_bend.leds" ; enabled: isTouchstripLedEnabled}
     }
   }
 
@@ -3831,7 +3838,7 @@ Module
       enabled: module.shift && hasSeek(deckBType) && !(deckBRunning.value  && scratchWithTouchstrip.value)
 
       Wire { from: "%surface%.touchstrip";       to: "decks.2.track_seek"      }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.track_seek.leds" }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.track_seek.leds" ; enabled: isTouchstripLedEnabled}
     }
 
     WiresGroup
@@ -3840,7 +3847,7 @@ Module
                || (deckBRunning.value && module.shift && (!hasSeek(deckBType) || scratchWithTouchstrip.value))
 
       Wire { from: "%surface%.touchstrip";       to: "decks.2.scratch"        }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.scratch.leds"   }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.scratch.leds" ; enabled: isTouchstripLedEnabled  }
     }
 
     WiresGroup
@@ -3848,7 +3855,7 @@ Module
       enabled: deckBRunning.value && !module.shift
 
       Wire { from: "%surface%.touchstrip";       to: "decks.2.tempo_bend"      }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.tempo_bend.leds" }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.2.tempo_bend.leds" ; enabled: isTouchstripLedEnabled }
     }
   }
 
@@ -3887,7 +3894,7 @@ Module
       enabled: module.shift && hasSeek(deckCType) && !(deckCRunning.value  && scratchWithTouchstrip.value)
 
       Wire { from: "%surface%.touchstrip";        to: "decks.3.track_seek"       }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.track_seek.leds"  }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.track_seek.leds" ; enabled: isTouchstripLedEnabled }
     }
 
     WiresGroup
@@ -3896,7 +3903,7 @@ Module
                || (deckCRunning.value && module.shift && (!hasSeek(deckCType) || scratchWithTouchstrip.value))
 
       Wire { from: "%surface%.touchstrip";        to: "decks.3.scratch"         }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.scratch.leds"    }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.scratch.leds"  ; enabled: isTouchstripLedEnabled  }
     }
 
     WiresGroup
@@ -3904,7 +3911,7 @@ Module
       enabled: deckCRunning.value && !module.shift
 
       Wire { from: "%surface%.touchstrip";        to: "decks.3.tempo_bend"       }
-      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.tempo_bend.leds"  }
+      Wire { from: "%surface%.touchstrip.leds";   to: "decks.3.tempo_bend.leds" ; enabled: isTouchstripLedEnabled }
     }
   }
 
@@ -3943,7 +3950,7 @@ Module
       enabled: module.shift && hasSeek(deckDType) && !(deckDRunning.value  && scratchWithTouchstrip.value)
 
       Wire { from: "%surface%.touchstrip";       to: "decks.4.track_seek"       }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.track_seek.leds"  }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.track_seek.leds" ; enabled: isTouchstripLedEnabled }
     }
 
     WiresGroup
@@ -3952,7 +3959,7 @@ Module
                || (deckDRunning.value && module.shift && (!hasSeek(deckDType) || scratchWithTouchstrip.value))
 
       Wire { from: "%surface%.touchstrip";       to: "decks.4.scratch"         }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.scratch.leds"    }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.scratch.leds"  ; enabled: isTouchstripLedEnabled  }
     }
 
     WiresGroup
@@ -3960,22 +3967,32 @@ Module
       enabled: deckDRunning.value && !module.shift
 
       Wire { from: "%surface%.touchstrip";       to: "decks.4.tempo_bend"       }
-      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.tempo_bend.leds"  }
+      Wire { from: "%surface%.touchstrip.leds";  to: "decks.4.tempo_bend.leds" ; enabled: isTouchstripLedEnabled }
     }
   }
 
   SwitchTimer { name: "TempBPMOverlay_Switch"; setTimeout: 250 }
+  SwitchTimer { name: "LedToggle_Switch"; setTimeout: 2000 }
 
   Wire { from: "%surface%.sync"; to: ButtonScriptAdapter { brightness: (isTempoSynced.value ? onBrightness : dimmedBrightness); color: ((!isTempoSynced.value || (syncPhase >= -0.01 && syncPhase <= 0.01)) ? Color.Green : Color.Red); onRelease: onSyncReleased(); } enabled: (editMode.value != editModeArmed) && (editMode.value != editModeUsed) && !module.shift }
   Wire { from: "%surface%.sync"; to: ButtonScriptAdapter { brightness: ((masterDeckIdProp.value == focusedDeckId - 1) ? onBrightness : dimmedBrightness); color: Color.Green; onRelease: onSyncReleased(); } enabled: (editMode.value != editModeArmed) && (editMode.value != editModeUsed) && module.shift }
   Wire { from: "%surface%.sync"; to: "TempBPMOverlay_Switch.input" }
-  Wire { from: "TempBPMOverlay_Switch.output"; to: ButtonScriptAdapter { onPress: { screenOverlay.value = Overlay.bpm; tempBPMOverlay = true; } } }
+  Wire { from: "TempBPMOverlay_Switch.output"; to: ButtonScriptAdapter { onPress: { tempBPMOverlay = true; } } }
+  Wire { from: "%surface%.sync"; to: "LedToggle_Switch.input" }
+  Wire { from: "LedToggle_Switch.output"; to: ButtonScriptAdapter { onPress: { tempLedToggle = true; } } }
 
   function onSyncReleased()
   {
+  if (tempLedToggle)
+  {
+    tempBPMOverlay = false;
+    isTouchstripLedEnabled = !isTouchstripLedEnabled;
+    tempLedToggle = false;
+    return;
+  }
     if (tempBPMOverlay)
     {
-      screenOverlay.value = Overlay.none;
+      hack_BPM.value = masterClockBpm.value;
       tempBPMOverlay = false;
       return;
     }
